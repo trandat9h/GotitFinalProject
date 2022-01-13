@@ -4,5 +4,9 @@ import logging
 class BaseConfig:
     LOGGING_LEVEL = logging.INFO
 
-    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:123456@127.0.0.1/catalog"
+    SQLALCHEMY_DATABASE_URI = (
+        "mysql+pymysql://root:trantuandat26@localhost:3306/Gotit-final-project"
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    SECRET_KEY = "trantuandat"
