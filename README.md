@@ -1,4 +1,4 @@
-# Got It's Final Project Template
+# Got It's Final Project 
 
 ## Requirements
 
@@ -21,19 +21,29 @@ source ./venv/bin/activate
 pip install -r requirements-dev.txt
 ```
 
-### Install `pre-commit` hooks
+### Setup database
+Create 2 different databases: development and test.
 
-- Install `pre-commit`: https://pre-commit.com/
-- Install `pre-commit` hooks:
+Set development database URL in config/base and test database URL in config/test in the following structure:
+```
+SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{passowrd}@localhost:3306/{database_name}"
+```
 
-  ```shell
-  pre-commit install
-  ```
+At the first running time, create tables by running the the following commands:
+```
+python create_table.py
+```
 
 ## Running
 
-Inside the virtual environment, run
+Inside the virtual environment, run:
 
 ```shell
 python run.py
+```
+## Testing
+
+For testing, run the following command:
+```
+ENVIRONMENT=test pytest
 ```

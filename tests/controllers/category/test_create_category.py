@@ -1,11 +1,10 @@
 import pytest
 
 from main.libs import generate_token
-from tests.helpers import initialize_category_records
 
 
-def test_create_category_successfully(client):
-    test_db = initialize_category_records()
+def test_create_category_successfully(client, initialize_records):
+    test_db = initialize_records
     user_id = test_db["users"][0].id
     new_category = {"name": "item1"}
     response = client.post(
@@ -24,8 +23,8 @@ def test_create_category_successfully(client):
         {},
     ],
 )
-def test_create_category_with_invalid_data(client, category):
-    test_db = initialize_category_records()
+def test_create_category_with_invalid_data(client, category, initialize_records):
+    test_db = initialize_records
     user_id = test_db["users"][0].id
     response = client.post(
         "/categories",
@@ -36,8 +35,8 @@ def test_create_category_with_invalid_data(client, category):
     assert response.status_code == 400
 
 
-def test_create_category_with_existed_name(client):
-    test_db = initialize_category_records()
+def test_create_category_with_existed_name(client, initialize_records):
+    test_db = initialize_records
     exist_category = {"name": "category1"}
     user_id = test_db["users"][0].id
     response = client.post(

@@ -1,11 +1,10 @@
 import pytest
 
 from main.libs import generate_token
-from tests.helpers import initialize_category_records
 
 
-def test_create_item_successfully(client):
-    test_db = initialize_category_records()
+def test_create_item_successfully(client, initialize_records):
+    test_db = initialize_records
     user_id = test_db["users"][0].id
     new_item = {"name": "item3", "description": "bla blo3"}
     category_id = test_db["categories"][0].id
@@ -27,8 +26,8 @@ def test_create_item_successfully(client):
         # more test cases here
     ],
 )
-def test_create_item_with_invalid_data(client, item):
-    test_db = initialize_category_records()
+def test_create_item_with_invalid_data(client, item, initialize_records):
+    test_db = initialize_records
     user_id = test_db["users"][0].id
     category_id = test_db["categories"][0].id
     response = client.post(
@@ -40,8 +39,8 @@ def test_create_item_with_invalid_data(client, item):
     assert response.status_code == 400
 
 
-def test_create_item_with_existed_name(client):
-    test_db = initialize_category_records()
+def test_create_item_with_existed_name(client, initialize_records):
+    test_db = initialize_records
     user_id = test_db["users"][0].id
     category_id = test_db["categories"][0].id
     new_item = {"name": "item1", "description": "bla blo3"}
@@ -54,8 +53,8 @@ def test_create_item_with_existed_name(client):
     assert response.status_code == 400
 
 
-def test_create_item_with_unknown_category_id(client):
-    test_db = initialize_category_records()
+def test_create_item_with_unknown_category_id(client, initialize_records):
+    test_db = initialize_records
     user_id = test_db["users"][0].id
     category_id = 100000  # random category id
     new_item = {"name": "item1", "description": "bla blo3"}

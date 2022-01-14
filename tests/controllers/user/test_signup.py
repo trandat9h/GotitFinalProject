@@ -1,8 +1,6 @@
 import pytest
 from flask import json
 
-from tests.helpers import initialize_user_records
-
 
 @pytest.mark.parametrize(
     ("email", "password", "message"),
@@ -21,16 +19,15 @@ def test_signup_with_invalid_data(client, email, password, message):
     assert json_response["error_code"] == 400000
 
 
-def test_signup_with_existed_email(client):
-    _ = initialize_user_records()
+def test_signup_with_existed_email(client, initialize_records):
     signup_user = {"email": "dat1@gmail.com", "password": "Dat12345"}
     response = client.post("/users/signup", json=signup_user)
 
     assert response.status_code == 400
 
 
-def test_signup_successfully(client):
-    signup_user = {"email": "dat@gmail.com", "password": "Dat12345"}
+def test_signup_successfully(client, initialize_records):
+    signup_user = {"email": "dat3@gmail.com", "password": "Dat12345"}
     response = client.post("/users/signup", json=signup_user)
 
     assert response.status_code == 200

@@ -1,9 +1,8 @@
 from main.libs import generate_token
-from tests.helpers import initialize_category_records
 
 
-def test_get_single_item_successfully(client):
-    test_db = initialize_category_records()
+def test_get_single_item_successfully(client, initialize_records):
+    test_db = initialize_records
     user_id = test_db["users"][0].id
     category_id = test_db["categories"][0].id
     item_id = test_db["items"][0].id
@@ -15,8 +14,8 @@ def test_get_single_item_successfully(client):
     assert response.status_code == 200
 
 
-def test_get_single_item_with_unknown_item_id(client):
-    test_db = initialize_category_records()
+def test_get_single_item_with_unknown_item_id(client, initialize_records):
+    test_db = initialize_records
     user_id = test_db["users"][0].id
     category_id = test_db["categories"][0].id
     item_id = 100000  # random item_id
@@ -28,8 +27,8 @@ def test_get_single_item_with_unknown_item_id(client):
     assert response.status_code == 404
 
 
-def test_get_single_item_with_unknown_category_id(client):
-    test_db = initialize_category_records()
+def test_get_single_item_with_unknown_category_id(client, initialize_records):
+    test_db = initialize_records
     user_id = test_db["users"][0].id
     category_id = 100000  # random item_id
     item_id = test_db["items"][0].id
@@ -41,8 +40,8 @@ def test_get_single_item_with_unknown_category_id(client):
     assert response.status_code == 404
 
 
-def test_get_all_items_successfully(client):
-    test_db = initialize_category_records()
+def test_get_all_items_successfully(client, initialize_records):
+    test_db = initialize_records
     user_id = test_db["users"][0].id
     category_id = test_db["categories"][0].id
     response = client.get(
@@ -53,8 +52,8 @@ def test_get_all_items_successfully(client):
     assert response.status_code == 200
 
 
-def test_get_all_items_with_unknown_category_id(client):
-    test_db = initialize_category_records()
+def test_get_all_items_with_unknown_category_id(client, initialize_records):
+    test_db = initialize_records
     user_id = test_db["users"][0].id
     category_id = 100000  # random category_id
     response = client.get(
