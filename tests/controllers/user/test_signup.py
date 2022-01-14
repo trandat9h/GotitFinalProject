@@ -1,22 +1,44 @@
 import pytest
 from flask import json
 
+from main.models.user import User
+
 
 @pytest.mark.parametrize(
-    ("email", "password", "message"),
-    (
-        ("dat@gmail.com", "1", "Shorter than minimum length 6."),
-        ("dat@gmail.com", "da123", "Shorter than minimum length 6."),
-        ("dat@gmail.com", "dat123", "Password contains no uppercase character."),
-        ("dat@gmail.com", "Datttttt", "Password contains no number."),
-        ("dat@gmail.com", "DATTTTT", "Password contains no lowercase character."),
-        # more test case
-    ),
+    "user",
+    [
+        {"email": "dat3@gmail.com", "password": "1"},  # password is shorter than 6
+        {
+            "email": "dat3@gmail.com",
+            "password": "dat123",
+        },  # password does not contain uppercase letter
+        {
+            "email": "dat3@gmail.com",
+            "password": "Dattttt",
+        },  # password does not contain number
+        {
+            "email": "dat3@gmail.com",
+            "password": "DATTTT",
+        },  # password does not contain lowercase letter
+        {"email": "not email", "password": "Dat1234"},  # email it not in correct form
+        {"email": "dat3@gmail.com", "password": ""},  # no password value
+        {"email": "", "password": "Dat1234"},  # no email value
+        {"email": "", "password": ""},  # no email and password value
+        {"password": ""},  # no email field
+        {"email": ""},  # no password field
+        {},  # no field
+    ],
 )
-def test_signup_with_invalid_data(client, email, password, message):
-    response = client.post("/users/signup", json={"email": email, "password": password})
+def test_signup_with_invalid_data(client, user):
+    response = client.post("/users/signup", json=user)
     json_response = json.loads(response.data)
     assert json_response["error_code"] == 400000
+    assert (
+        User.query.filter_by(
+            email=user["email"] if "email" in user else None
+        ).one_or_none()
+        is None
+    )
 
 
 def test_signup_with_existed_email(client, initialize_records):
@@ -24,6 +46,7 @@ def test_signup_with_existed_email(client, initialize_records):
     response = client.post("/users/signup", json=signup_user)
 
     assert response.status_code == 400
+    assert User.query.filter_by(email=signup_user["email"]).one_or_none() is not None
 
 
 def test_signup_successfully(client, initialize_records):
@@ -31,3 +54,4 @@ def test_signup_successfully(client, initialize_records):
     response = client.post("/users/signup", json=signup_user)
 
     assert response.status_code == 200
+    assert User.query.filter_by(email=signup_user["email"]).one_or_none() is not None
