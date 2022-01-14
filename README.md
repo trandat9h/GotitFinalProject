@@ -47,3 +47,15 @@ For testing, run the following command:
 ```
 ENVIRONMENT=test pytest
 ```
+If test database tables has not set, run the following command to initialize ones:
+```
+flask db upgrade
+```
+If test tables are already existed and conflict with current models, remove all files inside migrations/versions folder and all tables inside test database.
+
+Create a revision file in migrations/version by running:
+```
+flask db migrate
+```
+Then do the initialization step as above.
+
