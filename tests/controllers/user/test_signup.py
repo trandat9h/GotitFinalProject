@@ -26,6 +26,10 @@ from main.models.user import User
         {"email": "", "password": ""},  # no email and password value
         {"password": ""},  # no email field
         {"email": ""},  # no password field
+        {
+            "email": "Dat5@gmail.com",
+            "password": "Dat诶12345",
+        },  # password contains non-ascii character
         {},  # no field
     ],
 )

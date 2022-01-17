@@ -20,14 +20,16 @@ def test_delete_category_with_no_exist_id(client, initialize_records):
     test_db = initialize_records
     user_id = test_db["users"][0].id
     category_id = 100000  # random number
+    assert Category.query.get(category_id) is None
 
     response = client.delete(
         f"/categories/{category_id}",
         headers={"Authorization": f"Bearer {generate_token(user_id)}"},
     )
+    json_response = response.get_json()
 
     assert response.status_code == 404
-    assert Category.query.get(category_id) is None
+    assert json_response["error_message"] == "Category not found."
 
 
 def test_delete_category_with_unauthorized_user(client, initialize_records):

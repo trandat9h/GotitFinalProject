@@ -1,36 +1,35 @@
-from flask import jsonify, request
+from flask import jsonify
 
 from main import app, db
-from main.commons.exceptions import BadRequest, Forbidden, InternalServerError
-from main.engines import check_category_exist, check_item_exist
-from main.libs import validate_input, validate_token
+from main.commons.decorators import (
+    check_category_exist,
+    check_item_exist,
+    validate_input,
+    validate_token,
+)
+from main.commons.exceptions import (
+    ItemDeleteForbidden,
+    ItemExisted,
+    ItemUpdateForbidden,
+)
 from main.models.item import Item
-from main.schemas import ItemSchema
+from main.schemas import ItemSchema, PageSchema
 
 
 @app.get("/categories/<int:category_id>/items")
-@validate_token
+@validate_input(PageSchema)
 @check_category_exist
-def get_items(*_, category, **__):
-    try:
-        page = int(request.args.get("page"))
-        print(type(page))
-    except KeyError:
-        # this handler is not yet listed in design docs
-        raise BadRequest(error_code=400010, error_message="page is not provided")
-
-    paginated_items = category.items.paginate(page=page, per_page=3)
+def get_items(category, page, **__):
+    paginated_items = category.items.paginate(
+        page=page, per_page=app.config["PER_PAGE"]
+    )
     items = ItemSchema(many=True).dump(paginated_items.items)
-    # any pagination method to count items length besides list len?
-    return (
-        jsonify(
-            {
-                "items": items,
-                "items_per_page": len(items),
-                "total_items": paginated_items.total,
-            }
-        ),
-        200,
+    return jsonify(
+        {
+            "items": items,
+            "items_per_page": paginated_items.per_page,
+            "total_items": paginated_items.total,
+        }
     )
 
 
@@ -38,34 +37,25 @@ def get_items(*_, category, **__):
 @validate_token
 @validate_input(ItemSchema)
 @check_category_exist
-def create_item(*_, category, user_id, name, description, **__):
-    try:
-        existed_item = Item.query.filter_by(name=name).one_or_none()
-    except Exception as e:
-        raise InternalServerError(error_message=str(e))
+def create_item(category, user_id, name, description, **__):
+    existing_item = Item.query.filter_by(name=name).one_or_none()
 
-    if existed_item:
-        raise BadRequest(
-            error_message=f"item {name} already existed.", error_code=400003
-        )
+    if existing_item:
+        raise ItemExisted()
+    new_item = Item(
+        name=name, description=description, category_id=category.id, user_id=user_id
+    )
+    db.session.add(new_item)
+    db.session.commit()
 
-    try:
-        new_item = Item(
-            name=name, description=description, category_id=category.id, user_id=user_id
-        )
-        db.session.add(new_item)
-        db.session.commit()
-    except Exception as e:
-        raise InternalServerError(error_message=str(e))
-    return jsonify({}), 200
+    return jsonify({})
 
 
 @app.get("/categories/<int:category_id>/items/<int:item_id>")
-@validate_token
 @check_category_exist
 @check_item_exist
-def get_item(*_, item, **__):
-    return jsonify(ItemSchema().dump(item)), 200
+def get_item(item, **__):
+    return ItemSchema().jsonify(item)
 
 
 @app.put("/categories/<int:category_id>/items/<int:item_id>")
@@ -73,50 +63,33 @@ def get_item(*_, item, **__):
 @validate_input(ItemSchema)
 @check_category_exist
 @check_item_exist
-def update_item(*_, name, description, item, user_id, **__):
+def update_item(name, description, item, user_id, **__):
     if item.user_id != user_id:
-        raise Forbidden(
-            error_message="This user is not allowed to update this item.",
-            error_code=403002,
-        )
+        raise ItemUpdateForbidden()
 
     # check for existed item name
-    try:
-        existed_item = Item.query.filter_by(name=name).one_or_none()
-    except Exception as e:
-        raise InternalServerError(error_message=str(e))
+    existing_item = Item.query.filter_by(name=name).one_or_none()
 
     # if another item with input name existed
-    if existed_item and existed_item.id != item.id:
-        raise BadRequest(
-            error_message=f"Item {name} is already existed.", error_code=400003
-        )
+    if existing_item and existing_item.id != item.id:
+        raise ItemExisted()
 
-    try:
-        item.name = name
-        item.description = description
-        db.session.commit()
-    except Exception as e:
-        raise InternalServerError(error_message=str(e))
+    item.name = name
+    item.description = description
+    db.session.commit()
 
-    return jsonify({}), 200
+    return jsonify({})
 
 
 @app.delete("/categories/<int:category_id>/items/<int:item_id>")
 @validate_token
 @check_category_exist
 @check_item_exist
-def delete_item(*_, item, user_id, **__):
+def delete_item(item, user_id, **__):
     if item.user_id != user_id:
-        raise Forbidden(
-            error_message="This user is not allowed to update this item.",
-            error_code=403002,
-        )
+        raise ItemDeleteForbidden()
 
-    try:
-        db.session.delete(item)
-        db.session.commit()
-    except Exception as e:
-        raise InternalServerError(error_message=str(e))
+    db.session.delete(item)
+    db.session.commit()
 
-    return jsonify({}), 200
+    return jsonify({})

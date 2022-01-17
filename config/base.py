@@ -10,3 +10,5 @@ class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     SECRET_KEY = "trantuandat"
+
+    PER_PAGE = 20

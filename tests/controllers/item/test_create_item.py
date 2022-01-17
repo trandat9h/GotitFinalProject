@@ -27,6 +27,8 @@ def test_create_item_successfully(client, initialize_records):
         {"name": "", "description": ""},
         {"description": ""},
         {"name": ""},
+        {"name": "Dat诶", "description": "bla blo bla"},
+        {"name": "Dat123", "description": "Dat诶"},
         {},
     ],
 )
@@ -75,8 +77,10 @@ def test_create_item_with_unknown_category_id(client, initialize_records):
         json=new_item,
         headers={"Authorization": f"Bearer {generate_token(user_id)}"},
     )
+    json_response = response.get_json()
 
     assert response.status_code == 404
+    assert json_response["error_message"] == "Category not found."
     assert (
         Item.query.filter_by(
             name=new_item["name"], category_id=category_id

@@ -22,6 +22,7 @@ def test_create_category_successfully(client, initialize_records):
     "category",
     [
         {"name": ""},
+        {"name": "Dat诶"},
         {},
     ],
 )

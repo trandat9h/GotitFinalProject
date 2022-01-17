@@ -15,21 +15,35 @@ class StatusCode:
 
 
 class _ErrorCode:
-    BAD_REQUEST = 400000
-    VALIDATION_ERROR = 400001
+    VALIDATION_ERROR = 400000
+    ITEM_EXISTED = 400001
+    CATEGORY_EXISTED = 400002
+    EMAIL_EXISTED = 400003
+    LOGIN_UNSUCCESSFULLY = 400006
     UNAUTHORIZED = 401000
-    FORBIDDEN = 403000
+    ITEM_UPDATE_FORBIDDEN = 403000
+    ITEM_DELETE_FORBIDDEN = 403001
+    CATEGORY_DELETE_FORBIDDEN = 403002
     NOT_FOUND = 404000
+    ITEM_NOT_FOUND = 404001
+    CATEGORY_NOT_FOUND = 404002
     METHOD_NOT_ALLOWED = 405000
     INTERNAL_SERVER_ERROR = 500000
 
 
 class _ErrorMessage:
-    BAD_REQUEST = "Bad request."
     VALIDATION_ERROR = "Validation error."
+    ITEM_EXISTED = "Item existed."
+    CATEGORY_EXISTED = "Category existed."
+    EMAIL_EXISTED = "Email existed."
+    LOGIN_UNSUCCESSFULLY = "Login unsuccessfully."
     UNAUTHORIZED = "Unauthorized."
-    FORBIDDEN = "Forbidden."
+    ITEM_UPDATE_FORBIDDEN = "Not allowed to update this item."
+    ITEM_DELETE_FORBIDDEN = "Not allowed to delete this item."
+    CATEGORY_DELETE_FORBIDDEN = "Not allowed to delete this category."
     NOT_FOUND = "Not found."
+    ITEM_NOT_FOUND = "Item not found."
+    CATEGORY_NOT_FOUND = "Category not found."
     METHOD_NOT_ALLOWED = "Method not allowed."
     INTERNAL_SERVER_ERROR = "Internal server error."
 
@@ -68,16 +82,34 @@ class BaseError(Exception):
         return make_response(response, self.status_code)
 
 
-class BadRequest(BaseError):
-    status_code = StatusCode.BAD_REQUEST
-    error_message = _ErrorMessage.BAD_REQUEST
-    error_code = _ErrorCode.BAD_REQUEST
-
-
 class ValidationError(BaseError):
     status_code = StatusCode.BAD_REQUEST
     error_message = _ErrorMessage.VALIDATION_ERROR
     error_code = _ErrorCode.VALIDATION_ERROR
+
+
+class EmailExisted(BaseError):
+    status_code = StatusCode.BAD_REQUEST
+    error_message = _ErrorMessage.EMAIL_EXISTED
+    error_code = _ErrorCode.EMAIL_EXISTED
+
+
+class ItemExisted(BaseError):
+    status_code = StatusCode.BAD_REQUEST
+    error_message = _ErrorMessage.ITEM_EXISTED
+    error_code = _ErrorCode.ITEM_EXISTED
+
+
+class CategoryExisted(BaseError):
+    status_code = StatusCode.BAD_REQUEST
+    error_message = _ErrorMessage.CATEGORY_EXISTED
+    error_code = _ErrorCode.CATEGORY_EXISTED
+
+
+class LoginUnsuccessfully(BaseError):
+    status_code = StatusCode.BAD_REQUEST
+    error_message = _ErrorMessage.LOGIN_UNSUCCESSFULLY
+    error_code = _ErrorCode.LOGIN_UNSUCCESSFULLY
 
 
 class Unauthorized(BaseError):
@@ -86,16 +118,40 @@ class Unauthorized(BaseError):
     error_code = _ErrorCode.UNAUTHORIZED
 
 
-class Forbidden(BaseError):
+class ItemUpdateForbidden(BaseError):
     status_code = StatusCode.FORBIDDEN
-    error_message = _ErrorMessage.FORBIDDEN
-    error_code = _ErrorCode.FORBIDDEN
+    error_message = _ErrorMessage.ITEM_UPDATE_FORBIDDEN
+    error_code = _ErrorCode.ITEM_UPDATE_FORBIDDEN
+
+
+class ItemDeleteForbidden(BaseError):
+    status_code = StatusCode.FORBIDDEN
+    error_message = _ErrorMessage.ITEM_DELETE_FORBIDDEN
+    error_code = _ErrorCode.ITEM_DELETE_FORBIDDEN
+
+
+class CategoryDeleteForbidden(BaseError):
+    status_code = StatusCode.FORBIDDEN
+    error_message = _ErrorMessage.CATEGORY_DELETE_FORBIDDEN
+    error_code = _ErrorCode.CATEGORY_DELETE_FORBIDDEN
 
 
 class NotFound(BaseError):
     status_code = StatusCode.NOT_FOUND
     error_message = _ErrorMessage.NOT_FOUND
-    error_code = _ErrorCode.NOT_FOUND
+    error_code = _ErrorCode.ITEM_NOT_FOUND
+
+
+class ItemNotFound(BaseError):
+    status_code = StatusCode.NOT_FOUND
+    error_message = _ErrorMessage.ITEM_NOT_FOUND
+    error_code = _ErrorCode.ITEM_NOT_FOUND
+
+
+class CategoryNotFound(BaseError):
+    status_code = StatusCode.NOT_FOUND
+    error_message = _ErrorMessage.CATEGORY_NOT_FOUND
+    error_code = _ErrorCode.CATEGORY_NOT_FOUND
 
 
 class MethodNotAllowed(BaseError):

@@ -26,6 +26,27 @@ def test_update_item_successfully(client, initialize_records):
     )
 
 
+def test_update_item_with_existed_item_name(client, initialize_records):
+    test_db = initialize_records
+    user_id = test_db["users"][0].id
+    item_id = test_db["items"][0].id
+    item_name = test_db["items"][0].name
+    category_id = test_db["categories"][0].id
+    update_item = {
+        "name": test_db["items"][1].name,
+        "description": "bla blo3",
+    }  # item name existed
+
+    response = client.put(
+        f"/categories/{category_id}/items/{item_id}",
+        json=update_item,
+        headers={"Authorization": f"Bearer {generate_token(user_id)}"},
+    )
+
+    assert response.status_code == 400
+    assert Item.query.get(item_id).name == item_name
+
+
 def test_update_item_with_unknown_category_id(client, initialize_records):
     test_db = initialize_records
 
@@ -39,8 +60,10 @@ def test_update_item_with_unknown_category_id(client, initialize_records):
         json=update_item,
         headers={"Authorization": f"Bearer {generate_token(user_id)}"},
     )
+    json_response = response.get_json()
 
     assert response.status_code == 404
+    assert json_response["error_message"] == "Category not found."
     assert Item.query.filter_by(category_id=category_id).one_or_none() is None
 
 
@@ -55,8 +78,10 @@ def test_update_item_with_unknown_item_id(client, initialize_records):
         json=update_item,
         headers={"Authorization": f"Bearer {generate_token(user_id)}"},
     )
+    json_response = response.get_json()
 
     assert response.status_code == 404
+    assert json_response["error_message"] == "Item not found."
     assert Item.query.get(item_id) is None
 
 
