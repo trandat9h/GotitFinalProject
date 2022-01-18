@@ -18,12 +18,12 @@ def check_category_exist(func):
     @functools.wraps(func)
     def wrapper_function(*args, **kwargs):
         category_id = kwargs["category_id"]
-        queried_category = Category.query.get(category_id)
+        category = Category.query.get(category_id)
 
-        if queried_category is None:
+        if category is None:
             raise CategoryNotFound()
 
-        kwargs["category"] = queried_category
+        kwargs["category"] = category
         return func(*args, **kwargs)
 
     return wrapper_function
@@ -32,12 +32,12 @@ def check_category_exist(func):
 def check_item_exist(func):
     @functools.wraps(func)
     def wrapper_function(*args, category, item_id, **kwargs):
-        queried_item = category.items.filter_by(id=item_id).one_or_none()
+        item = category.items.filter_by(id=item_id).one_or_none()
 
-        if queried_item is None:
+        if item is None:
             raise ItemNotFound()
 
-        kwargs["item"] = queried_item
+        kwargs["item"] = item
         return func(*args, **kwargs)
 
     return wrapper_function

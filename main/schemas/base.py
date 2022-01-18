@@ -1,5 +1,5 @@
 from flask import jsonify
-from marshmallow import EXCLUDE, Schema, fields
+from marshmallow import EXCLUDE, Schema, ValidationError, fields
 
 
 class BaseSchema(Schema):
@@ -8,6 +8,11 @@ class BaseSchema(Schema):
 
     def jsonify(self, obj, many=False):
         return jsonify(self.dump(obj, many=many))
+
+    def ascii_validator(self, value):
+        for char in value:
+            if not char.isascii():
+                raise ValidationError("Category name contain non-ascii character.")
 
 
 class PaginationSchema(BaseSchema):

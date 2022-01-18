@@ -23,16 +23,11 @@ def sign_in(email, password, **__):
 @validate_input(UserSchema)
 def signup(email, password, **__):
     existing_user = User.query.filter_by(email=email).one_or_none()
-
     if existing_user:
         raise EmailExisted()
 
-    auth_data = generate_hashed_password(password)
-    new_user = User(
-        email=email,
-        hashed_password=auth_data["hashed_password_with_salt"],
-        salt=auth_data["salt"],
-    )
+    hashed_password, salt = generate_hashed_password(password)
+    new_user = User(email=email, hashed_password=hashed_password, salt=salt)
     db.session.add(new_user)
     db.session.commit()
     return jsonify(

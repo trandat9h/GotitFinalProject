@@ -1,4 +1,4 @@
-from marshmallow import ValidationError, fields, post_load, validate, validates
+from marshmallow import fields, post_load, validate, validates
 
 from .base import BaseSchema
 
@@ -15,6 +15,4 @@ class CategorySchema(BaseSchema):
 
     @validates("name")
     def name_validator(self, value):
-        for char in value:
-            if not char.isascii():
-                raise ValidationError("Category name contain non-ascii character.")
+        self.ascii_validator(value)

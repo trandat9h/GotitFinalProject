@@ -10,7 +10,7 @@ def generate_hashed_password(password):
     salt = os.urandom(8)
     hashed_password = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 100000)
 
-    return {"hashed_password_with_salt": hashed_password.hex(), "salt": salt.hex()}
+    return hashed_password.hex(), salt.hex()
 
 
 def generate_token(user_id):

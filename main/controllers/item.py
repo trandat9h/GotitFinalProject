@@ -39,9 +39,9 @@ def get_items(category, page, **__):
 @check_category_exist
 def create_item(category, user_id, name, description, **__):
     existing_item = Item.query.filter_by(name=name).one_or_none()
-
     if existing_item:
         raise ItemExisted()
+
     new_item = Item(
         name=name, description=description, category_id=category.id, user_id=user_id
     )

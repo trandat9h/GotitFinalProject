@@ -36,7 +36,7 @@ def create_category(user_id, name, **__):
     db.session.add(new_category)
     db.session.commit()
 
-    return CategorySchema().jsonify(new_category, many=False)
+    return CategorySchema().jsonify(new_category)
 
 
 @app.delete("/categories/<int:category_id>")
