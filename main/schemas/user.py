@@ -13,10 +13,10 @@ class UserSchema(BaseSchema):
         has_upper = False
         has_lower = False
         has_number = False
-        has_non_ascii_character = False
+        has_non_ascii = False
         for char in value:
             if not char.isascii():
-                has_non_ascii_character = True
+                has_non_ascii = True
                 break
             elif char.isupper():
                 has_upper = True
@@ -25,8 +25,8 @@ class UserSchema(BaseSchema):
             elif char.isdecimal():
                 has_number = True
 
-        if has_non_ascii_character:
-            raise ValidationError("Password contain non-ascii character.")
+        if has_non_ascii:
+            raise ValidationError("Password contains non-ascii character.")
         elif not has_upper:
             raise ValidationError("Password contains no uppercase character.")
         elif not has_lower:

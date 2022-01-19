@@ -55,7 +55,7 @@ def validate_input(schema):
             try:
                 loaded_data = schema().load(data)
             except MarshmallowValidationError as e:
-                raise ValidationError(error_data=dict(e.messages))
+                raise ValidationError(error_data=e.messages)
             return func(*args, **loaded_data, **kwargs)
 
         return wrapper

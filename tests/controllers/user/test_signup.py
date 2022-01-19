@@ -34,7 +34,7 @@ from main.models.user import User
     ],
 )
 def test_signup_with_invalid_data(client, user):
-    response = client.post("/users/signup", json=user)
+    response = client.post("/users/sign-up", json=user)
     json_response = json.loads(response.data)
     assert json_response["error_code"] == 400000
     assert (
@@ -47,7 +47,7 @@ def test_signup_with_invalid_data(client, user):
 
 def test_signup_with_existed_email(client, initialize_records):
     signup_user = {"email": "dat1@gmail.com", "password": "Dat12345"}
-    response = client.post("/users/signup", json=signup_user)
+    response = client.post("/users/sign-up", json=signup_user)
 
     assert response.status_code == 400
     assert User.query.filter_by(email=signup_user["email"]).one_or_none() is not None
@@ -55,7 +55,7 @@ def test_signup_with_existed_email(client, initialize_records):
 
 def test_signup_successfully(client, initialize_records):
     signup_user = {"email": "dat3@gmail.com", "password": "Dat12345"}
-    response = client.post("/users/signup", json=signup_user)
+    response = client.post("/users/sign-up", json=signup_user)
 
     assert response.status_code == 200
     assert User.query.filter_by(email=signup_user["email"]).one_or_none() is not None

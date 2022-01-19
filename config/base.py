@@ -11,4 +11,4 @@ class BaseConfig:
 
     SECRET_KEY = "trantuandat"
 
-    PER_PAGE = 20
+    ITEMS_PER_PAGE = 20

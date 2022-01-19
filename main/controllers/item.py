@@ -13,7 +13,8 @@ from main.commons.exceptions import (
     ItemUpdateForbidden,
 )
 from main.models.item import Item
-from main.schemas import ItemSchema, PageSchema
+from main.schemas.item import ItemSchema
+from main.schemas.page import PageSchema
 
 
 @app.get("/categories/<int:category_id>/items")
@@ -43,7 +44,10 @@ def create_item(category, user_id, name, description, **__):
         raise ItemExisted()
 
     new_item = Item(
-        name=name, description=description, category_id=category.id, user_id=user_id
+        name=name,
+        description=description,
+        category_id=category.id,
+        user_id=user_id,
     )
     db.session.add(new_item)
     db.session.commit()

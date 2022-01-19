@@ -1,17 +1,18 @@
 from flask import jsonify
 
-from main import app, db
+from main import app, config, db
 from main.commons.decorators import check_category_exist, validate_input, validate_token
 from main.commons.exceptions import CategoryDeleteForbidden, CategoryExisted
 from main.models.category import Category
-from main.schemas import CategorySchema, PageSchema
+from main.schemas.category import CategorySchema
+from main.schemas.page import PageSchema
 
 
 @app.get("/categories")
 @validate_input(PageSchema)
 def get_categories(page, **__):
     paginated_categories = Category.query.paginate(
-        page=page, per_page=app.config["PER_PAGE"]
+        page=page, per_page=config.ITEMS_PER_PAGE
     )
     categories = CategorySchema(many=True).dump(paginated_categories.items)
 
@@ -32,7 +33,10 @@ def create_category(user_id, name, **__):
     if existing_category:
         raise CategoryExisted()
 
-    new_category = Category(name=name, user_id=user_id)
+    new_category = Category(
+        name=name,
+        user_id=user_id,
+    )
     db.session.add(new_category)
     db.session.commit()
 
