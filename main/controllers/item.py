@@ -48,7 +48,7 @@ def create_item(category, user_id, name, description, **__):
     db.session.add(new_item)
     db.session.commit()
 
-    return jsonify({})
+    return ItemSchema().jsonify(new_item)
 
 
 @app.get("/categories/<int:category_id>/items/<int:item_id>")

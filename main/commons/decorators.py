@@ -47,7 +47,7 @@ def validate_input(schema):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            if request.method == "GET":
+            if request.method in ["GET", "DELETE"]:
                 data = request.args
             else:
                 data = request.get_json()
