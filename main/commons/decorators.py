@@ -48,7 +48,7 @@ def validate_input(schema):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             if request.method == "GET":
-                data = {"page": request.args.get("page")}
+                data = request.args
             else:
                 data = request.get_json()
 
